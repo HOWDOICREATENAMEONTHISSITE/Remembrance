@@ -1,1 +1,179 @@
-[{"name":"code","language":"html","content":"<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>Memory Game</title>\n    <style>\n        body {\n            font-family: Arial, sans-serif;\n            display: flex;\n            justify-content: center;\n            align-items: center;\n            height: 100vh;\n            margin: 0;\n            background-color: #f0f0f0;\n        }\n        .container {\n            text-align: center;\n            padding: 20px;\n            background-color: #fff;\n            border-radius: 10px;\n            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);\n        }\n        .button {\n            display: block;\n            width: 100%;\n            padding: 15px;\n            margin: 10px 0;\n            font-size: 18px;\n            color: #fff;\n            background-color: #007BFF;\n            border: none;\n            border-radius: 5px;\n            cursor: pointer;\n        }\n        .button:hover {\n            background-color: #0056b3;\n        }\n        .input-field {\n            width: 100%;\n            padding: 10px;\n            margin: 10px 0;\n            font-size: 18px;\n            border: 1px solid #ccc;\n            border-radius: 5px;\n        }\n    </style>\n</head>\n<body>\n    <div class=\"container\" id=\"menu\">\n        <h1>Игра на память</h1>\n        <button class=\"button\" onclick=\"startGame('easy')\">Легкий</button>\n        <button class=\"button\" onclick=\"startGame('medium')\">Средний</button>\n        <button class=\"button\" onclick=\"startGame('hard')\">Сложный</button>\n    </div>\n    <div class=\"container\" id=\"game\" style=\"display: none;\">\n        <div id=\"word-display\"></div>\n        <input type=\"text\" id=\"input-field\" class=\"input-field\" placeholder=\"Введите слова через запятую с пробелом\" style=\"display: none;\">\n        <button class=\"button\" id=\"submit-button\" onclick=\"checkAnswer()\" style=\"display: none;\">Проверить</button>\n    </div>\n    <div class=\"container\" id=\"result\" style=\"display: none;\">\n        <h2 id=\"result-message\"></h2>\n        <button class=\"button\" onclick=\"goToMenu()\">Главное меню</button>\n        <button class=\"button\" id=\"restart-button\" onclick=\"startGame(currentDifficulty)\" style=\"display: none;\">Заново</button>\n    </div>\n    <script>\n        const words = [\"дом\", \"книга\", \"стол\", \"стул\", \"окно\", \"дверь\", \"стена\", \"пол\", \"потолок\", \"лампа\",\n            \"кровать\", \"шкаф\", \"зеркало\", \"картина\", \"диван\", \"кресло\", \"подушка\", \"одеяло\", \"плед\", \"ковёр\",\n            \"телефон\", \"компьютер\", \"телевизор\", \"холодильник\", \"плита\", \"микроволновка\", \"чайник\", \"тарелка\",\n            \"чашка\", \"ложка\", \"вилка\", \"нож\", \"тарелка\", \"кастрюля\", \"сковородка\", \"посуда\", \"еда\", \"вода\",\n            \"соль\", \"сахар\", \"перец\", \"хлеб\", \"масло\", \"сыр\", \"молоко\", \"мясо\", \"рыба\", \"фрукты\", \"овощи\",\n            \"яблоко\", \"груша\", \"банан\", \"апельсин\", \"помидор\", \"огурец\", \"картофель\", \"морковь\", \"лук\", \"чеснок\",\n            \"цветы\", \"дерево\", \"трава\", \"куст\", \"солнце\", \"луна\", \"звёзды\", \"небо\", \"облако\", \"дождь\", \"снег\",\n            \"ветер\", \"море\", \"река\", \"озеро\", \"лес\", \"гора\", \"дорога\", \"машина\", \"автобус\", \"поезд\", \"самолёт\",\n            \"город\", \"деревня\", \"село\", \"улица\", \"площадь\", \"парк\", \"дом\", \"квартира\", \"комната\", \"человек\",\n            \"женщина\", \"мужчина\", \"ребёнок\", \"собака\", \"кошка\", \"птица\", \"рыба\", \"песня\", \"музыка\", \"танец\",\n            \"работа\", \"учёба\", \"отдых\", \"день\", \"ночь\", \"утро\", \"вечер\", \"час\", \"минута\", \"секунда\", \"год\",\n            \"месяц\", \"неделя\", \"зима\", \"весна\", \"лето\", \"осень\", \"холод\", \"тепло\", \"жара\", \"свет\", \"тьма\",\n            \"красота\", \"доброта\", \"правда\", \"ложь\", \"счастье\", \"горе\", \"любовь\", \"дружба\", \"жизнь\", \"смерть\"];\n        let displayedWords = [];\n        let currentWordIndex = 0;\n        let currentDifficulty = '';\n        \n        function startGame(difficulty) {\n            currentDifficulty = difficulty;\n            displayedWords = getRandomWords(5);\n            currentWordIndex = 0;\n            document.getElementById('menu').style.display = 'none';\n            document.getElementById('game').style.display = 'block';\n            document.getElementById('result').style.display = 'none';\n            showNextWord();\n        }\n        \n        function getRandomWords(count) {\n            const shuffled = words.sort(() => 0.5 - Math.random());\n            return shuffled.slice(0, count);\n        }\n        \n        function showNextWord() {\n            if (currentWordIndex < displayedWords.length) {\n                document.getElementById('word-display').innerText = displayedWords[currentWordIndex];\n                currentWordIndex++;\n                const delay = { easy: 2000, medium: 1500, hard: 1000 }[currentDifficulty];\n                setTimeout(showNextWord, delay);\n            } else {\n                showInputField();\n            }\n        }\n        \n        function showInputField() {\n            document.getElementById('word-display').innerText = '';\n            document.getElementById('input-field').style.display = 'block';\n            document.getElementById('submit-button').style.display = 'block';\n        }\n        \n        function checkAnswer() {\n            const userInput = document.getElementById('input-field').value.trim();\n            const correctAnswer = displayedWords.join(', ');\n            if (userInput === correctAnswer) {\n                showResult('Отлично!');\n            } else {\n                showResult('Неправильно.', true);\n            }\n        }\n        \n        function showResult(message, showRestart = false) {\n            document.getElementById('game').style.display = 'none';\n            document.getElementById('result').style.display = 'block';\n            document.getElementById('result-message').innerText = message;\n            document.getElementById('restart-button').style.display = showRestart ? 'block' : 'none';\n        }\n        \n        function goToMenu() {\n            document.getElementById('menu').style.display = 'block';\n            document.getElementById('result').style.display = 'none';\n        }\n    </script>\n</body>\n</html>"}]
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Игра на память</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        #menu, #game, #result {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center; /* Центрирование текста внутри элементов */
+            width: 100%;
+        }
+
+        #menu, #result {
+            justify-content: center; /* Центрирование элементов по вертикали */
+        }
+
+        .button-container {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+          margin-top: 20px;
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+        }
+
+        #word-display {
+            font-size: 30px;
+            margin-bottom: 20px;
+        }
+
+        #input-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 50%;
+        }
+        #input-field {
+          width: calc(100% - 20px);
+          padding: 10px;
+          margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="menu">
+    <h1>Игра на память</h1>
+    <div class="button-container">
+        <button onclick="startGame('easy')">Лёгкий</button>
+        <button onclick="startGame('medium')">Средний</button>
+        <button onclick="startGame('hard')">Сложный</button>
+    </div>
+</div>
+
+<div id="game" style="display: none;">
+    <div id="word-display"></div>
+    <div id="input-area" style="display: none;">
+        <input type="text" id="input-field" placeholder="Введите слова через запятую">
+        <button onclick="checkAnswer()">Проверить</button>
+    </div>
+</div>
+
+
+<div id="result" style="display: none;">
+    <div id="result-message"></div>
+    <div class="button-container">
+      <button onclick="startGame(currentDifficulty)">Заново</button>
+      <button onclick="showMenu()">Главное меню</button>
+    </div>
+</div>
+
+<script>
+    let words = {
+        // Вставьте сюда свои слова
+        // Пример:
+        // easy: ["слово1", "слово2", "слово3", "слово4", "слово5"],
+        // medium: ["слово1", "слово2", "слово3", "слово4", "слово5", "слово6"],
+        // hard: ["слово1", "слово2", "слово3", "слово4", "слово5", "слово6", "слово7"]
+    };
+
+    let currentDifficulty;
+    let displayedWords = [];
+    let currentWordIndex = 0;
+    let menuDiv = document.getElementById("menu");
+    let gameDiv = document.getElementById("game");
+    let resultDiv = document.getElementById("result");
+    let wordDisplayDiv = document.getElementById("word-display");
+    let inputAreaDiv = document.getElementById("input-area");
+    let inputField = document.getElementById('input-field');
+    let resultMessageDiv = document.getElementById("result-message");
+
+
+    function startGame(difficulty) {
+        currentDifficulty = difficulty;
+        displayedWords = shuffle(words[difficulty]).slice(0, {'easy': 5, 'medium': 6, 'hard': 7}[difficulty]);
+        currentWordIndex = 0;
+
+        menuDiv.style.display = "none";
+        gameDiv.style.display = "flex";
+        resultDiv.style.display = "none";
+        wordDisplayDiv.textContent = "";
+        inputAreaDiv.style.display = "none";
+
+        showNextWord();
+    }
+
+    function showNextWord() {
+        if (currentWordIndex < displayedWords.length) {
+            wordDisplayDiv.textContent = displayedWords[currentWordIndex];
+            currentWordIndex++;
+            let delay = {'easy': 2, 'medium': 1.5, 'hard': 1}[currentDifficulty] * 1000;
+            setTimeout(showNextWord, delay);
+        } else {
+            showInputField();
+        }
+    }
+
+    function showInputField() {
+      wordDisplayDiv.textContent = "";
+      inputAreaDiv.style.display = "flex";
+      inputField.value = ""; // очистить поле ввода
+      inputField.focus();
+    }
+
+    function checkAnswer() {
+        let userAnswer = inputField.value.trim().split(/,\s*/);
+        let correctAnswer = displayedWords.join(", ");
+
+        if (userAnswer.join(", ") === correctAnswer) {
+          showResult("Отлично!");
+        } else {
+          showResult("Неправильно.");
+        }
+    }
+
+
+    function showResult(message) {
+        gameDiv.style.display = "none";
+        resultDiv.style.display = "flex";
+        resultMessageDiv.textContent = message;
+    }
+
+
+    function shuffle(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    function showMenu() {
+        menuDiv.style.display = "flex";
+        gameDiv.style.display = "none";
+        resultDiv.style.display = "none";
+    }
+</script>
+
+</body>
+</html>

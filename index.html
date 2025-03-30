@@ -17,19 +17,19 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            text-align: center; /* Центрирование текста внутри элементов */
+            text-align: center;
             width: 100%;
         }
 
         #menu, #result {
-            justify-content: center; /* Центрирование элементов по вертикали */
+            justify-content: center;
         }
 
         .button-container {
-          display: flex;
-          flex-direction: column;
-          gap: 10px;
-          margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
         }
 
         button {
@@ -53,10 +53,11 @@
             align-items: center;
             width: 50%;
         }
+
         #input-field {
-          width: calc(100% - 20px);
-          padding: 10px;
-          margin-bottom: 10px;
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 10px;
         }
     </style>
 </head>
@@ -79,23 +80,30 @@
     </div>
 </div>
 
-
 <div id="result" style="display: none;">
     <div id="result-message"></div>
     <div class="button-container">
-      <button onclick="startGame(currentDifficulty)">Заново</button>
-      <button onclick="showMenu()">Главное меню</button>
+        <button onclick="startGame(currentDifficulty)">Заново</button>
+        <button onclick="showMenu()">Главное меню</button>
     </div>
 </div>
 
 <script>
-    let words = {
-        // Вставьте сюда свои слова
-        // Пример:
-        // easy: ["слово1", "слово2", "слово3", "слово4", "слово5"],
-        // medium: ["слово1", "слово2", "слово3", "слово4", "слово5", "слово6"],
-        // hard: ["слово1", "слово2", "слово3", "слово4", "слово5", "слово6", "слово7"]
-    };
+    let allWords = [
+        "дом", "книга", "стол", "стул", "окно", "дверь", "стена", "пол", "потолок", "лампа",
+            "кровать", "шкаф", "зеркало", "картина", "диван", "кресло", "подушка", "одеяло", "плед", "ковёр",
+            "телефон", "компьютер", "телевизор", "холодильник", "плита", "микроволновка", "чайник", "тарелка",
+            "чашка", "ложка", "вилка", "нож", "тарелка", "кастрюля", "сковородка", "посуда", "еда", "вода",
+            "соль", "сахар", "перец", "хлеб", "масло", "сыр", "молоко", "мясо", "рыба", "фрукты", "овощи",
+            "яблоко", "груша", "банан", "апельсин", "помидор", "огурец", "картофель", "морковь", "лук", "чеснок",
+            "цветы", "дерево", "трава", "куст", "солнце", "луна", "звёзды", "небо", "облако", "дождь", "снег",
+            "ветер", "море", "река", "озеро", "лес", "гора", "дорога", "машина", "автобус", "поезд", "самолёт",
+            "город", "деревня", "село", "улица", "площадь", "парк", "дом", "квартира", "комната", "человек",
+            "женщина", "мужчина", "ребёнок", "собака", "кошка", "птица", "рыба", "песня", "музыка", "танец",
+            "работа", "учёба", "отдых", "день", "ночь", "утро", "вечер", "час", "минута", "секунда", "год",
+            "месяц", "неделя", "зима", "весна", "лето", "осень", "холод", "тепло", "жара", "свет", "тьма",
+            "красота", "доброта", "правда", "ложь", "счастье", "горе", "любовь", "дружба", "жизнь", "смерть"
+    ];
 
     let currentDifficulty;
     let displayedWords = [];
@@ -111,7 +119,7 @@
 
     function startGame(difficulty) {
         currentDifficulty = difficulty;
-        displayedWords = shuffle(words[difficulty]).slice(0, {'easy': 5, 'medium': 6, 'hard': 7}[difficulty]);
+        displayedWords = shuffle(allWords).slice(0, { easy: 5, medium: 6, hard: 7 }[difficulty]);
         currentWordIndex = 0;
 
         menuDiv.style.display = "none";
@@ -127,7 +135,7 @@
         if (currentWordIndex < displayedWords.length) {
             wordDisplayDiv.textContent = displayedWords[currentWordIndex];
             currentWordIndex++;
-            let delay = {'easy': 2, 'medium': 1.5, 'hard': 1}[currentDifficulty] * 1000;
+            let delay = { easy: 2, medium: 1.5, hard: 1 }[currentDifficulty] * 1000;
             setTimeout(showNextWord, delay);
         } else {
             showInputField();
@@ -135,28 +143,39 @@
     }
 
     function showInputField() {
-      wordDisplayDiv.textContent = "";
-      inputAreaDiv.style.display = "flex";
-      inputField.value = ""; // очистить поле ввода
-      inputField.focus();
+        wordDisplayDiv.textContent = "";
+        inputAreaDiv.style.display = "flex";
+        inputField.value = "";
+        inputField.focus();
     }
 
     function checkAnswer() {
-        let userAnswer = inputField.value.trim().split(/,\s*/);
-        let correctAnswer = displayedWords.join(", ");
+      let userAnswer = inputField.value.trim().split(/,\s*/);
+      let correctAnswer = displayedWords.join(", ");
 
-        if (userAnswer.join(", ") === correctAnswer) {
+      if (userAnswer.length !== displayedWords.length) {
+         showResult("Неправильно. Неверное количество слов.");
+         return;
+      }
+
+
+      if (userAnswer.join(", ") === correctAnswer) {
           showResult("Отлично!");
-        } else {
+      } else {
           showResult("Неправильно.");
-        }
+      }
     }
-
 
     function showResult(message) {
         gameDiv.style.display = "none";
         resultDiv.style.display = "flex";
         resultMessageDiv.textContent = message;
+
+        // Correctly update event listeners
+        let retryButton = resultDiv.querySelector("button:first-of-type");
+        let menuButton = resultDiv.querySelector("button:last-of-type");
+        retryButton.onclick = () => startGame(currentDifficulty);
+        menuButton.onclick = showMenu;
     }
 
 
